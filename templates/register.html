@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h4>Create Account</h4>
+
+<form method="POST" class="w-50 mx-auto">
+  <input class="form-control mb-3" name="name" placeholder="Name" required>
+  <input class="form-control mb-3" name="email" placeholder="Email" required>
+  <input class="form-control mb-3" type="password" name="password" placeholder="Password" required>
+  <button class="btn btn-dark w-100">Register</button>
+</form>
+{% endblock %}

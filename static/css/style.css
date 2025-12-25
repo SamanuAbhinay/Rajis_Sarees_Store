@@ -1,0 +1,17 @@
+body {
+    background-color: #f5f5f5;
+}
+
+.product-card {
+    border: none;
+    transition: transform 0.3s;
+}
+
+.product-card:hover {
+    transform: scale(1.05);
+}
+
+.card-img-top {
+    height: 250px;
+    object-fit: cover;
+}
