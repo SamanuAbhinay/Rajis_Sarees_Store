@@ -9,6 +9,7 @@ from flask_login import (
     current_user
 )
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy import func
 
 # -------------------------------------------------
 # APP CONFIG
@@ -47,6 +48,14 @@ class Product(db.Model):
     image = db.Column(db.String(300), nullable=False)
     description = db.Column(db.Text, nullable=False)
 
+class Cart(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey("product.id"), nullable=False)
+    quantity = db.Column(db.Integer, default=1)
+
+    product = db.relationship("Product")
+
 class CartItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
@@ -79,6 +88,17 @@ class Order(db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(User, int(user_id))
+
+@app.context_processor
+def inject_cart_count():
+    if current_user.is_authenticated:
+        count = (
+            db.session.query(db.func.sum(CartItem.quantity))
+            .filter(CartItem.user_id == current_user.id)
+            .scalar()
+        )
+        return {"cart_count": count or 0}
+    return {"cart_count": 0}
 
 # -------------------------------------------------
 # HOME PAGE

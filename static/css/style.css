@@ -234,3 +234,15 @@ button:hover {
 .auth-container button:hover {
   background: #e7335c;
 }
+
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -14px;
+  background: #ff3f6c;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
