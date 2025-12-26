@@ -1,26 +1,37 @@
 {% extends "base.html" %}
+
 {% block content %}
 
-<div class="row">
-  {% for product in sarees %}
-  <div class="col-md-3 mb-4">
-    <div class="card h-100 shadow-sm">
+<div class="product-grid">
 
-      <img src="{{ product.image }}" class="card-img-top">
+  {% for saree in sarees %}
+  <div class="product-card">
 
-      <div class="card-body text-center">
-        <h6>{{ product.name }}</h6>
-        <p class="fw-bold">₹{{ product.price }}</p>
+    <a href="/product/{{ saree.id }}">
+      <img src="{{ saree.image }}" class="product-img">
+    </a>
 
-        <a href="{{ url_for('product_detail', id=product.id) }}"
-           class="btn btn-sm btn-outline-dark w-100">
-          View Details
-        </a>
-      </div>
+    <div class="product-info">
+      <h6>{{ saree.name }}</h6>
+      <p class="price">₹{{ saree.price }}</p>
+      <p class="stock">Stock: {{ saree.stock }}</p>
+
+      <form action="/add-to-cart/{{ saree.id }}" method="POST">
+        <button class="btn-buy">Add to Cart</button>
+      </form>
+
+      {% if current_user.is_authenticated and current_user.is_admin %}
+      <form action="/admin/update-stock/{{ saree.id }}" method="POST">
+        <input type="number" name="stock" value="{{ saree.stock }}">
+        <button>Update Stock</button>
+      </form>
+      {% endif %}
 
     </div>
+
   </div>
   {% endfor %}
+
 </div>
 
 {% endblock %}

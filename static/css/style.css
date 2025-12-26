@@ -1,3 +1,21 @@
+/* ===============================
+   GLOBAL RESET & THEME
+================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f5f5f6;
+    color: #282c3f;
+}
+
 body {
     background-color: #f5f5f5;
 }
@@ -14,4 +32,205 @@ body {
 .card-img-top {
     height: 250px;
     object-fit: cover;
+}
+
+.myntra-navbar {
+    background: #ffffff;
+    padding: 15px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.brand-logo {
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.nav-icon {
+    text-decoration: none;
+    font-weight: 500;
+    color: #282c3f;
+}
+
+.nav-icon:hover {
+    color: #ff3f6c;
+}
+
+/* ===============================
+   PRODUCT GRID
+================================ */
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+    padding: 30px 0;
+}
+
+.product-card {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.product-img {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+}
+
+.product-info {
+    padding: 15px;
+}
+
+.product-info h6 {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.price {
+    color: #ff3f6c;
+    font-weight: 700;
+}
+
+.stock {
+    font-size: 12px;
+    color: #777;
+}
+
+.btn-buy {
+    width: 100%;
+    background: #ff3f6c;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+.btn-buy:hover {
+    background: #e6375b;
+}
+
+.cart-btn {
+    background: #ff3f6c;
+    color: white;
+    border-radius: 5px;
+    padding: 8px 12px;
+    border: none;
+}
+
+.cart-btn-outline {
+    border: 1px solid #ff3f6c;
+    color: #ff3f6c;
+    background: transparent;
+}
+
+button {
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    transform: scale(1.02);
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 40px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.logo a {
+  font-size: 22px;
+  font-weight: 700;
+  color: #000;
+  text-decoration: none;
+}
+
+/* Nav buttons */
+.nav-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.nav-btn {
+  padding: 8px 18px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+/* Login */
+.nav-btn.login {
+  color: #000;
+  border: 1px solid #ddd;
+}
+
+.nav-btn.login:hover {
+  background: #f5f5f5;
+}
+
+/* Register */
+.nav-btn.register {
+  background: #ff3f6c;
+  color: #fff;
+}
+
+.nav-btn.register:hover {
+  background: #e7335c;
+}
+
+/* Logout */
+.nav-btn.logout {
+  background: #000;
+  color: #fff;
+}
+
+.auth-container {
+  max-width: 400px;
+  margin: 80px auto;
+  padding: 30px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.auth-container h2 {
+  margin-bottom: 20px;
+}
+
+.auth-container input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.auth-container button {
+  width: 100%;
+  padding: 10px;
+  background: #ff3f6c;
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.auth-container button:hover {
+  background: #e7335c;
 }
