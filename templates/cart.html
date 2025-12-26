@@ -12,12 +12,30 @@
   </tr>
 
   {% for item in items %}
-  <tr>
-    <td>{{ item.product.name }}</td>
-    <td>{{ item.quantity }}</td>
-    <td>₹{{ item.product.price * item.quantity }}</td>
-  </tr>
-  {% endfor %}
+<tr>
+  <td>{{ item.product.name }}</td>
+
+  <td>
+    <form action="/update-cart/{{ item.id }}" method="POST" style="display:flex;">
+      <input type="number" name="quantity"
+             value="{{ item.quantity }}"
+             min="1"
+             max="{{ item.product.stock }}"
+             class="form-control w-50">
+      <button class="btn btn-sm btn-primary ms-2">Update</button>
+    </form>
+  </td>
+
+  <td>₹{{ item.product.price * item.quantity }}</td>
+
+  <td>
+    <a href="/remove-from-cart/{{ item.id }}"
+       class="btn btn-sm btn-danger">
+       Remove
+    </a>
+  </td>
+</tr>
+{% endfor %}
 </table>
 
 <h4>Total: ₹{{ total }}</h4>

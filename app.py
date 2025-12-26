@@ -37,6 +37,7 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)  # ✅ NEW
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -77,7 +78,7 @@ class Order(db.Model):
 # -------------------------------------------------
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
 
 # -------------------------------------------------
 # HOME PAGE
@@ -135,6 +136,12 @@ def login():
             flash("Invalid email or password")
 
     return render_template("login.html")
+
+
+@app.route("/product/<int:id>")
+def product_detail(id):
+    product = Product.query.get_or_404(id)
+    return render_template("product_detail.html", product=product)
 
 @app.route("/add-products")
 def add_products():
@@ -211,12 +218,6 @@ def add_to_cart(product_id):
     flash("Item added to cart")
     return redirect(url_for("cart"))
 
-@app.route("/product/<int:id>")
-def product_detail(id):
-    product = Product.query.get_or_404(id)
-    return render_template("product_detail.html", product=product)
-
-
 @app.route("/cart")
 @login_required
 def cart():
@@ -224,6 +225,49 @@ def cart():
 
     total = sum(item.product.price * item.quantity for item in items)
     return render_template("cart.html", items=items, total=total)
+
+
+@app.route("/update-cart/<int:cart_id>", methods=["POST"])
+@login_required
+def update_cart(cart_id):
+    cart_item = CartItem.query.get_or_404(cart_id)
+    new_qty = int(request.form.get("quantity"))
+
+    # ❌ Security check
+    if cart_item.user_id != current_user.id:
+        flash("Unauthorized access")
+        return redirect(url_for("cart"))
+
+    # ❌ Invalid quantity
+    if new_qty <= 0:
+        flash("Quantity must be at least 1")
+        return redirect(url_for("cart"))
+
+    # ❌ Stock limit
+    if new_qty > cart_item.product.stock:
+        flash("Quantity exceeds available stock")
+        return redirect(url_for("cart"))
+
+    cart_item.quantity = new_qty
+    db.session.commit()
+
+    flash("Cart updated")
+    return redirect(url_for("cart"))
+
+@app.route("/remove-from-cart/<int:cart_id>")
+@login_required
+def remove_from_cart(cart_id):
+    cart_item = CartItem.query.get_or_404(cart_id)
+
+    if cart_item.user_id != current_user.id:
+        flash("Unauthorized action")
+        return redirect(url_for("cart"))
+
+    db.session.delete(cart_item)
+    db.session.commit()
+
+    flash("Item removed from cart")
+    return redirect(url_for("cart"))
 
 @app.route("/checkout", methods=["POST"])
 @login_required
@@ -267,6 +311,28 @@ def checkout():
 
     return redirect(url_for("home"))
 
+
+@app.route("/orders")
+@login_required
+def orders():
+    user_orders = Order.query.filter_by(user_id=current_user.id).all()
+    return render_template("orders.html", orders=user_orders)
+
+@app.route("/admin/update-stock/<int:product_id>", methods=["POST"])
+@login_required
+def update_stock(product_id):
+    product = Product.query.get_or_404(product_id)
+    new_stock = int(request.form.get("stock"))
+
+    if new_stock < 0:
+        flash("Stock cannot be negative")
+        return redirect(url_for("home"))
+
+    product.stock = new_stock
+    db.session.commit()
+
+    flash("Stock updated successfully")
+    return redirect(url_for("home"))
 
 # -------------------------------------------------
 # LOGOUT

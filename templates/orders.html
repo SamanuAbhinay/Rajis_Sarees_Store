@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3>Your Orders</h3>
+
+{% if orders %}
+<table class="table">
+  <tr>
+    <th>Order ID</th>
+    <th>Total Amount</th>
+  </tr>
+
+  {% for order in orders %}
+  <tr>
+    <td>#{{ order.id }}</td>
+    <td>₹{{ order.total_amount }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>No orders yet</p>
+{% endif %}
+
+{% endblock %}
