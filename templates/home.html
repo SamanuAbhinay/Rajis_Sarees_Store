@@ -1,37 +1,35 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="row g-4">
 
-<div class="product-grid">
-
-  {% for saree in sarees %}
+{% for saree in sarees %}
+<div class="col-md-3">
   <div class="product-card">
 
     <a href="/product/{{ saree.id }}">
       <img src="{{ saree.image }}" class="product-img">
     </a>
 
-    <div class="product-info">
-      <h6>{{ saree.name }}</h6>
-      <p class="price">₹{{ saree.price }}</p>
-      <p class="stock">Stock: {{ saree.stock }}</p>
+    {% if saree.stock <= 3 %}
+      <span class="stock-badge">Only {{ saree.stock }} left</span>
+    {% endif %}
 
-      <form action="/add-to-cart/{{ saree.id }}" method="POST">
-        <button class="btn-buy">Add to Cart</button>
-      </form>
+    <div class="p-3">
+      <h6 class="product-name">{{ saree.name }}</h6>
 
-      {% if current_user.is_authenticated and current_user.is_admin %}
-      <form action="/admin/update-stock/{{ saree.id }}" method="POST">
-        <input type="number" name="stock" value="{{ saree.stock }}">
-        <button>Update Stock</button>
-      </form>
-      {% endif %}
+      <div class="price-box">
+        <span class="sale-price">₹{{ saree.price }}</span>
+        <span class="mrp">₹{{ saree.mrp }}</span>
+        <span class="discount">
+          {{ ((saree.mrp - saree.price) * 100 // saree.mrp) }}% OFF
+        </span>
+      </div>
 
     </div>
-
   </div>
-  {% endfor %}
+</div>
+{% endfor %}
 
 </div>
-
 {% endblock %}

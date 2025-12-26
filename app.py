@@ -43,7 +43,8 @@ class User(UserMixin, db.Model):
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
-    price = db.Column(db.Integer, nullable=False)
+    mrp = db.Column(db.Integer, nullable=False)      # NEW
+    price = db.Column(db.Integer, nullable=False)    # Sale price
     stock = db.Column(db.Integer, nullable=False)  # NEW
     image = db.Column(db.String(300), nullable=False)
     description = db.Column(db.Text, nullable=False)
@@ -168,6 +169,7 @@ def add_products():
     products = [
         Product(
             name="Kanjeevaram Silk Saree",
+            mrp=3499,
             price=2499,
             stock=100,
             image="https://via.placeholder.com/300",
@@ -175,6 +177,7 @@ def add_products():
         ),
         Product(
             name="Banarasi Saree",
+            mrp=2999,
             price=1999,
             stock=100,
             image="https://via.placeholder.com/300",
@@ -182,6 +185,7 @@ def add_products():
         ),
         Product(
             name="Cotton Handloom Saree",
+            mrp=1999,
             price=999,
             stock=100,
             image="https://via.placeholder.com/300",
@@ -189,6 +193,7 @@ def add_products():
         ),
         Product(
             name="Designing Party Saree",
+            mrp=4999,
             price=3999,
             stock=100,
             image="https://via.placeholder.com/300",
