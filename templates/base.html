@@ -23,7 +23,11 @@
     <div class="ms-auto d-flex align-items-center gap-4">
 
       {% if current_user.is_authenticated %}
-
+      {% if current_user.is_admin %}
+    <a href="/admin/dashboard" class="nav-icon fw-bold text-danger">
+      Admin
+    </a>
+  {% endif %}
         <!-- CART WITH BADGE -->
         <a href="/cart" class="nav-icon position-relative">
           🛒 Cart

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, flash
+from flask import Flask, abort, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
     LoginManager,
@@ -338,21 +338,14 @@ def orders():
     user_orders = Order.query.filter_by(user_id=current_user.id).all()
     return render_template("orders.html", orders=user_orders)
 
-@app.route("/admin/update-stock/<int:product_id>", methods=["POST"])
+@app.route("/admin/dashboard")
 @login_required
-def update_stock(product_id):
-    product = Product.query.get_or_404(product_id)
-    new_stock = int(request.form.get("stock"))
+def admin_dashboard():
+    if not current_user.is_admin:
+        abort(403)
 
-    if new_stock < 0:
-        flash("Stock cannot be negative")
-        return redirect(url_for("home"))
-
-    product.stock = new_stock
-    db.session.commit()
-
-    flash("Stock updated successfully")
-    return redirect(url_for("home"))
+    products = Product.query.all()
+    return render_template("admin/dashboard.html", products=products)
 
 # -------------------------------------------------
 # LOGOUT

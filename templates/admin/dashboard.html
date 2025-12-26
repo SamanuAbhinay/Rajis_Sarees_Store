@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="mb-4">Admin Dashboard</h2>
+
+<div class="table-responsive">
+  <table class="table table-bordered align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th>Image</th>
+        <th>Product</th>
+        <th>Price (₹)</th>
+        <th>Stock</th>
+        <th>Update Stock</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for product in products %}
+      <tr>
+        <td>
+          <img src="{{ product.image }}" width="70" class="rounded">
+        </td>
+        <td>
+          <strong>{{ product.name }}</strong><br>
+          <small class="text-muted">{{ product.description }}</small>
+        </td>
+        <td>₹ {{ product.price }}</td>
+        <td>
+          {% if product.stock > 10 %}
+            <span class="badge bg-success">{{ product.stock }}</span>
+          {% elif product.stock > 0 %}
+            <span class="badge bg-warning text-dark">{{ product.stock }}</span>
+          {% else %}
+            <span class="badge bg-danger">Out of stock</span>
+          {% endif %}
+        </td>
+
+        <td>
+          <form method="POST" action="/admin/update-stock/{{ product.id }}" class="d-flex gap-2">
+            <input
+              type="number"
+              name="stock"
+              min="0"
+              class="form-control form-control-sm"
+              placeholder="New stock"
+              required
+            >
+            <button class="btn btn-sm btn-primary">Update</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
