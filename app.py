@@ -165,7 +165,7 @@ def add_products():
             name="Kanjeevaram Silk Saree",
             mrp=3499,
             price=2499,
-            stock=100,
+            stock=200,
             image="https://via.placeholder.com/300",
             description="Premium silk saree"
         ),
@@ -173,7 +173,7 @@ def add_products():
             name="Banarasi Saree",
             mrp=2999,
             price=1999,
-            stock=100,
+            stock=200,
             image="https://via.placeholder.com/300",
             description="Wedding saree"
         ),
@@ -181,7 +181,7 @@ def add_products():
             name="Cotton Handloom Saree",
             mrp=1999,
             price=999,
-            stock=100,
+            stock=200,
             image="https://via.placeholder.com/300",
             description="Homely Ware Sarees"
         ),
@@ -189,7 +189,7 @@ def add_products():
             name="Designing Party Saree",
             mrp=4999,
             price=3999,
-            stock=100,
+            stock=200,
             image="https://via.placeholder.com/300",
             description="Party Ware Sarees"
         )
@@ -289,7 +289,78 @@ def admin_dashboard():
         abort(403)
 
     products = Product.query.all()
-    return render_template("admin/dashboard.html", products=products)
+
+    return render_template(
+        "admin/dashboard.html",
+        products=products
+    )
+def admin_required():
+    if not current_user.is_authenticated or not current_user.is_admin:
+        abort(403)
+
+@app.route("/admin/product/add", methods=["GET", "POST"])
+@login_required
+def admin_add_product():
+    admin_required()
+
+    if request.method == "POST":
+        product = Product(
+            name=request.form["name"],
+            mrp=int(request.form["mrp"]),
+            price=int(request.form["price"]),
+            stock=int(request.form["stock"]),
+            image=request.form["image"],
+            description=request.form["description"]
+        )
+        db.session.add(product)
+        db.session.commit()
+        flash("Product added successfully")
+        return redirect(url_for("admin_dashboard"))
+
+    return render_template("admin/add_product.html")
+
+@app.route("/admin/product/edit/<int:id>", methods=["GET", "POST"])
+@login_required
+def admin_edit_product(id):
+    admin_required()
+    product = Product.query.get_or_404(id)
+
+    if request.method == "POST":
+        product.name = request.form["name"]
+        product.mrp = int(request.form["mrp"])
+        product.price = int(request.form["price"])
+        product.stock = int(request.form["stock"])
+        product.image = request.form["image"]
+        product.description = request.form["description"]
+
+        db.session.commit()
+        flash("Product updated successfully")
+        return redirect(url_for("admin_dashboard"))
+
+    return render_template("admin/edit_product.html", product=product)
+
+@app.route("/admin/product/delete/<int:id>")
+@login_required
+def admin_delete_product(id):
+    admin_required()
+    product = Product.query.get_or_404(id)
+    db.session.delete(product)
+    db.session.commit()
+    flash("Product deleted")
+    return redirect(url_for("admin_dashboard"))
+
+@app.route("/admin/update-stock/<int:id>", methods=["POST"])
+@login_required
+def admin_update_stock(id):
+    if not current_user.is_admin:
+        abort(403)
+
+    product = Product.query.get_or_404(id)
+    product.stock = int(request.form["stock"])
+    db.session.commit()
+
+    flash("Stock updated successfully")
+    return redirect(url_for("admin_dashboard"))
 
 # -------------------------------------------------
 # INIT DB

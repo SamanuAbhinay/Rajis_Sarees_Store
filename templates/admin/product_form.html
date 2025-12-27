@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="mb-4">
+  {% if product %}
+    ✏️ Edit Product
+  {% else %}
+    ➕ Add Product
+  {% endif %}
+</h2>
+
+<form method="POST" class="card p-4 shadow-sm" style="max-width:600px">
+
+  <div class="mb-3">
+    <label class="form-label">Product Name</label>
+    <input
+      name="name"
+      class="form-control"
+      value="{{ product.name if product }}"
+      required
+    >
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">MRP</label>
+    <input
+      name="mrp"
+      type="number"
+      class="form-control"
+      value="{{ product.mrp if product }}"
+      required
+    >
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Selling Price</label>
+    <input
+      name="price"
+      type="number"
+      class="form-control"
+      value="{{ product.price if product }}"
+      required
+    >
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Stock</label>
+    <input
+      name="stock"
+      type="number"
+      class="form-control"
+      value="{{ product.stock if product }}"
+      required
+    >
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Image URL</label>
+    <input
+      name="image"
+      class="form-control"
+      value="{{ product.image if product }}"
+      required
+    >
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Description</label>
+    <textarea
+      name="description"
+      class="form-control"
+      rows="4"
+    >{{ product.description if product }}</textarea>
+  </div>
+
+  <button class="btn btn-primary">
+    {% if product %}
+      Update Product
+    {% else %}
+      Add Product
+    {% endif %}
+  </button>
+
+  <a href="/admin/dashboard" class="btn btn-secondary ms-2">
+    Cancel
+  </a>
+
+</form>
+
+{% endblock %}
