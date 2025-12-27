@@ -14,7 +14,6 @@
 
 <!-- TOAST -->
 <div class="toast-container position-fixed top-0 end-0 p-3">
-
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <div class="toast show align-items-center text-bg-dark border-0">
@@ -27,13 +26,12 @@
     </div>
   {% endif %}
 {% endwith %}
-
 </div>
 
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg myntra-navbar">
   <div class="container">
-    
+
     <!-- LOGO -->
     <a class="navbar-brand brand-logo" href="/">RAJI’S SAREES</a>
 
@@ -41,11 +39,18 @@
     <div class="ms-auto d-flex align-items-center gap-4">
 
       {% if current_user.is_authenticated %}
-      {% if current_user.is_admin %}
-    <a href="/admin/dashboard" class="nav-icon fw-bold text-danger">
-      Admin
-    </a>
-  {% endif %}
+
+        {% if current_user.is_admin %}
+          <a href="/admin/dashboard" class="nav-icon fw-bold text-danger">
+            Admin
+          </a>
+        {% endif %}
+
+        <!-- WISHLIST -->
+        <a href="/wishlist" class="nav-icon">
+          ❤️
+        </a>
+
         <!-- CART WITH BADGE -->
         <a href="/cart" class="nav-icon position-relative">
           🛒 Cart

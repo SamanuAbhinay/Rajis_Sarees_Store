@@ -1,35 +1,43 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 <div class="row g-4">
 
-{% for saree in sarees %}
-<div class="col-md-3">
-  <div class="product-card">
+  {% for product in sarees %}
+  <div class="col-md-3 col-sm-6">
 
-    <a href="/product/{{ saree.id }}">
-      <img src="{{ saree.image }}" class="product-img">
-    </a>
+    <div class="card product-card h-100">
 
-    {% if saree.stock <= 3 %}
-      <span class="stock-badge">Only {{ saree.stock }} left</span>
-    {% endif %}
+      <img src="{{ product.image }}" class="card-img-top" alt="{{ product.name }}">
 
-    <div class="p-3">
-      <h6 class="product-name">{{ saree.name }}</h6>
+      <div class="card-body">
 
-      <div class="price-box">
-        <span class="sale-price">₹{{ saree.price }}</span>
-        <span class="mrp">₹{{ saree.mrp }}</span>
-        <span class="discount">
-          {{ ((saree.mrp - saree.price) * 100 // saree.mrp) }}% OFF
-        </span>
+        <h6 class="card-title">{{ product.name }}</h6>
+
+        <p class="mb-1 fw-bold">₹{{ product.price }}</p>
+
+        {% if product.stock <= 3 %}
+          <span class="badge bg-danger">Only {{ product.stock }} left</span>
+        {% endif %}
+
+        <!-- ❤️ Wishlist -->
+        <form method="POST" action="/wishlist/toggle/{{ product.id }}">
+          <button class="btn btn-light btn-sm mt-2">❤️</button>
+        </form>
+
+        <!-- View Product -->
+        <a href="/product/{{ product.id }}" class="btn btn-dark btn-sm w-100 mt-2">
+          View
+        </a>
+
       </div>
 
     </div>
+
   </div>
-</div>
-{% endfor %}
+  {% endfor %}
 
 </div>
+
 {% endblock %}

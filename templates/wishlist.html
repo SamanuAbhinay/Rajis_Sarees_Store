@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h4 class="mb-3">❤️ My Wishlist</h4>
+
+<div class="row">
+  {% for item in items %}
+    <div class="col-6 col-md-3 mb-3">
+      <div class="card product-card">
+
+        <img src="{{ item.product.image }}" class="card-img-top">
+
+        <div class="card-body">
+          <h6 class="product-name">{{ item.product.name }}</h6>
+
+          <p class="sale-price">₹{{ item.product.price }}</p>
+
+          <a href="/product/{{ item.product.id }}" class="btn btn-sm btn-outline-dark w-100 mb-2">
+            View
+          </a>
+
+          <form method="POST" action="/wishlist/toggle/{{ item.product.id }}">
+            <button class="btn btn-sm btn-danger w-100">
+              Remove
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+{% if items|length == 0 %}
+  <p class="text-muted">Your wishlist is empty 💔</p>
+{% endif %}
+
+{% endblock %}

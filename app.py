@@ -31,21 +31,21 @@ login_manager = LoginManager(app)
 login_manager.login_view = "login"
 
 # -------------------------------------------------
-# USER MODEL
+# MODELS
 # -------------------------------------------------
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
-    is_admin = db.Column(db.Boolean, default=False)  # ✅ NEW
+    is_admin = db.Column(db.Boolean, default=False)
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
-    mrp = db.Column(db.Integer, nullable=False)      # NEW
-    price = db.Column(db.Integer, nullable=False)    # Sale price
-    stock = db.Column(db.Integer, nullable=False)  # NEW
+    mrp = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Integer, nullable=False)
+    stock = db.Column(db.Integer, nullable=False)
     image = db.Column(db.String(300), nullable=False)
     description = db.Column(db.Text, nullable=False)
 
@@ -57,24 +57,19 @@ class Cart(db.Model):
 
     product = db.relationship("Product")
 
+
 class CartItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey("user.id"),
-        nullable=False
-    )
-
-    product_id = db.Column(
-        db.Integer,
-        db.ForeignKey("product.id"),
-        nullable=False
-    )
-
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey("product.id"), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
 
-    user = db.relationship("User")
+    product = db.relationship("Product")
+
+class Wishlist(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey("product.id"), nullable=False)
     product = db.relationship("Product")
 
 class Order(db.Model):
@@ -84,81 +79,80 @@ class Order(db.Model):
 
 
 # -------------------------------------------------
-# LOAD USER
+# USER LOADER
 # -------------------------------------------------
 @login_manager.user_loader
 def load_user(user_id):
-    return db.session.get(User, int(user_id))
+    return User.query.get(int(user_id))
 
+# -------------------------------------------------
+# CONTEXT PROCESSOR
+# -------------------------------------------------
 @app.context_processor
 def inject_cart_count():
     if current_user.is_authenticated:
-        count = (
-            db.session.query(db.func.sum(CartItem.quantity))
-            .filter(CartItem.user_id == current_user.id)
-            .scalar()
-        )
+        count = db.session.query(
+            func.sum(CartItem.quantity)
+        ).filter_by(user_id=current_user.id).scalar()
         return {"cart_count": count or 0}
     return {"cart_count": 0}
 
 # -------------------------------------------------
-# HOME PAGE
+# ROUTES
 # -------------------------------------------------
 @app.route("/")
 def home():
     products = Product.query.all()
     return render_template("home.html", sarees=products)
 
-# -------------------------------------------------
-# REGISTER
-# -------------------------------------------------
+# ---------- AUTH ----------
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        name = request.form["name"]
-        email = request.form["email"]
-        password = request.form["password"]
-
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
+        if User.query.filter_by(email=request.form["email"]).first():
             flash("Email already registered")
             return redirect(url_for("register"))
-
-        hashed_password = generate_password_hash(password)
+        
 
         user = User(
-            name=name,
-            email=email,
-            password=hashed_password
+            name=request.form["name"],
+            email=request.form["email"],
+            password=generate_password_hash(request.form["password"])
         )
         db.session.add(user)
         db.session.commit()
 
-        flash("Registration successful! Please login.")
+        flash("Registration successful. Please login.")
         return redirect(url_for("login"))
 
     return render_template("register.html")
 
-# -------------------------------------------------
-# LOGIN
-# -------------------------------------------------
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.form["email"]
-        password = request.form["password"]
+        user = User.query.filter_by(email=request.form["email"]).first()
 
-        user = User.query.filter_by(email=email).first()
+        if not user:
+            flash("User not found")
+            return redirect(url_for("login"))
 
-        if user and check_password_hash(user.password, password):
-            login_user(user)
-            return redirect(url_for("home"))
-        else:
-            flash("Invalid email or password")
+        if not check_password_hash(user.password, request.form["password"]):
+            flash("Incorrect password")
+            return redirect(url_for("login"))
+
+        login_user(user)
+        return redirect(url_for("home"))
 
     return render_template("login.html")
 
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("login"))
 
+# ---------- PRODUCT ----------
 @app.route("/product/<int:id>")
 def product_detail(id):
     product = Product.query.get_or_404(id)
@@ -205,144 +199,89 @@ def add_products():
     db.session.commit()
     return "Products added"
 
+# ---------- CART ----------
 @app.route("/add-to-cart/<int:product_id>", methods=["POST"])
 @login_required
 def add_to_cart(product_id):
     product = Product.query.get_or_404(product_id)
-    quantity = int(request.form.get("quantity", 1))
+    qty = int(request.form.get("quantity", 1))
 
-    # ❌ Edge case: invalid quantity
-    if quantity <= 0:
-        flash("Invalid quantity")
-        return redirect(url_for("home"))
-
-    # ❌ Edge case: stock exceeded
-    if quantity > product.stock:
-        flash("Not enough stock available")
-        return redirect(url_for("product_detail", id=product.id))
-
-    cart_item = CartItem.query.filter_by(
+    item = CartItem.query.filter_by(
         user_id=current_user.id,
         product_id=product.id
     ).first()
 
-    if cart_item:
-        if cart_item.quantity + quantity > product.stock:
-            flash("Stock limit exceeded")
-            return redirect(url_for("product_detail", id=product.id))
-        cart_item.quantity += quantity
+    if item:
+        item.quantity += qty
     else:
-        cart_item = CartItem(
+        db.session.add(CartItem(
             user_id=current_user.id,
             product_id=product.id,
-            quantity=quantity
-        )
-        db.session.add(cart_item)
+            quantity=qty
+        ))
 
     db.session.commit()
-    flash("Item added to cart")
+    flash("Added to cart")
     return redirect(url_for("cart"))
 
 @app.route("/cart")
 @login_required
 def cart():
     items = CartItem.query.filter_by(user_id=current_user.id).all()
-
-    total = sum(item.product.price * item.quantity for item in items)
+    total = sum(i.product.price * i.quantity for i in items)
     return render_template("cart.html", items=items, total=total)
 
-
-@app.route("/update-cart/<int:cart_id>", methods=["POST"])
+# ---------- WISHLIST ----------
+@app.route("/wishlist/toggle/<int:product_id>", methods=["POST"])
 @login_required
-def update_cart(cart_id):
-    cart_item = CartItem.query.get_or_404(cart_id)
-    new_qty = int(request.form.get("quantity"))
+def toggle_wishlist(product_id):
+    item = Wishlist.query.filter_by(
+        user_id=current_user.id,
+        product_id=product_id
+    ).first()
 
-    # ❌ Security check
-    if cart_item.user_id != current_user.id:
-        flash("Unauthorized access")
-        return redirect(url_for("cart"))
+    if item:
+        db.session.delete(item)
+    else:
+        db.session.add(Wishlist(
+            user_id=current_user.id,
+            product_id=product_id
+        ))
 
-    # ❌ Invalid quantity
-    if new_qty <= 0:
-        flash("Quantity must be at least 1")
-        return redirect(url_for("cart"))
-
-    # ❌ Stock limit
-    if new_qty > cart_item.product.stock:
-        flash("Quantity exceeds available stock")
-        return redirect(url_for("cart"))
-
-    cart_item.quantity = new_qty
     db.session.commit()
+    return redirect(request.referrer)
 
-    flash("Cart updated")
-    return redirect(url_for("cart"))
-
-@app.route("/remove-from-cart/<int:cart_id>")
+@app.route("/wishlist")
 @login_required
-def remove_from_cart(cart_id):
-    cart_item = CartItem.query.get_or_404(cart_id)
+def wishlist():
+    items = Wishlist.query.filter_by(user_id=current_user.id).all()
+    return render_template("wishlist.html", items=items)
 
-    if cart_item.user_id != current_user.id:
-        flash("Unauthorized action")
-        return redirect(url_for("cart"))
-
-    db.session.delete(cart_item)
-    db.session.commit()
-
-    flash("Item removed from cart")
-    return redirect(url_for("cart"))
-
+# ---------- ORDERS ----------
 @app.route("/checkout", methods=["POST"])
 @login_required
 def checkout():
     items = CartItem.query.filter_by(user_id=current_user.id).all()
+    total = sum(i.product.price * i.quantity for i in items)
 
-    if not items:
-        flash("Cart is empty")
-        return redirect(url_for("cart"))
+    db.session.add(Order(
+        user_id=current_user.id,
+        total_amount=total
+    ))
 
-    total = 0
+    CartItem.query.filter_by(user_id=current_user.id).delete()
+    db.session.commit()
 
-    # 🔒 TRANSACTION SAFETY
-    try:
-        for item in items:
-            product = item.product
-
-            # ❌ Edge case: stock changed
-            if item.quantity > product.stock:
-                flash(f"Not enough stock for {product.name}")
-                return redirect(url_for("cart"))
-
-            product.stock -= item.quantity
-            total += product.price * item.quantity
-
-        order = Order(
-            user_id=current_user.id,
-            total_amount=total
-        )
-        db.session.add(order)
-
-        # Clear cart
-        CartItem.query.filter_by(user_id=current_user.id).delete()
-
-        db.session.commit()
-        flash("Order placed successfully (Dummy Checkout)")
-
-    except Exception:
-        db.session.rollback()
-        flash("Checkout failed. Try again.")
-
-    return redirect(url_for("home"))
-
+    flash("Order placed successfully")
+    return redirect(url_for("orders"))
 
 @app.route("/orders")
 @login_required
 def orders():
-    user_orders = Order.query.filter_by(user_id=current_user.id).all()
-    return render_template("orders.html", orders=user_orders)
+    orders = Order.query.filter_by(user_id=current_user.id).all()
+    return render_template("orders.html", orders=orders)
 
+# ---------- ADMIN ----------
 @app.route("/admin/dashboard")
 @login_required
 def admin_dashboard():
@@ -353,23 +292,13 @@ def admin_dashboard():
     return render_template("admin/dashboard.html", products=products)
 
 # -------------------------------------------------
-# LOGOUT
-# -------------------------------------------------
-@app.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for("login"))
-
-# -------------------------------------------------
-# CREATE DATABASE
+# INIT DB
 # -------------------------------------------------
 with app.app_context():
     db.create_all()
 
 # -------------------------------------------------
-# RUN SERVER
+# RUN
 # -------------------------------------------------
 if __name__ == "__main__":
     app.run(debug=True)
-    
