@@ -16,13 +16,16 @@
 <div class="toast-container position-fixed top-0 end-0 p-3">
 {% with messages = get_flashed_messages() %}
   {% if messages %}
-    <div class="toast show align-items-center text-bg-dark border-0">
-      <div class="d-flex">
-        <div class="toast-body">
-          {{ messages[0] }}
+    <div class="flash-container">
+      {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="alert"
+                  aria-label="Close"></button>
         </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto"></button>
-      </div>
+      {% endfor %}
     </div>
   {% endif %}
 {% endwith %}
@@ -78,7 +81,26 @@
     {% block content %}{% endblock %}
 </div>
 
+<!-- Bootstrap JS (REQUIRED) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Auto close flash messages -->
+<script>
+  setTimeout(() => {
+    document.querySelectorAll('.alert').forEach(alert => {
+      let bsAlert = new bootstrap.Alert(alert);
+      bsAlert.close();
+    });
+  }, 3000);
+</script>
+
+<script>
+  window.addEventListener("load", () => {
+    document.getElementById("skeleton-wrapper").classList.add("d-none");
+    document.getElementById("products-wrapper").classList.remove("d-none");
+  });
+</script>
 
 </body>
 </html>
+

@@ -1,3 +1,5 @@
+import os
+from werkzeug.utils import secure_filename
 from flask import Flask, abort, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
@@ -18,6 +20,9 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "sareestore_secret_key"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+UPLOAD_FOLDER = "static/uploads"
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 # -------------------------------------------------
 # DATABASE
@@ -153,10 +158,10 @@ def logout():
     return redirect(url_for("login"))
 
 # ---------- PRODUCT ----------
-@app.route("/product/<int:id>")
-def product_detail(id):
-    product = Product.query.get_or_404(id)
-    return render_template("product_detail.html", product=product)
+@app.route("/product/<int:product_id>")
+def product_details(product_id):
+    product = Product.query.get_or_404(product_id)
+    return render_template("product_details.html", product=product)
 
 @app.route("/add-products")
 def add_products():
@@ -301,19 +306,32 @@ def admin_required():
 @app.route("/admin/product/add", methods=["GET", "POST"])
 @login_required
 def admin_add_product():
-    admin_required()
+    if not current_user.is_admin:
+        abort(403)
 
     if request.method == "POST":
-        product = Product(
-            name=request.form["name"],
-            mrp=int(request.form["mrp"]),
-            price=int(request.form["price"]),
-            stock=int(request.form["stock"]),
-            image=request.form["image"],
-            description=request.form["description"]
+        name = request.form["name"]
+        mrp = request.form["mrp"]
+        price = request.form["price"]
+        stock = request.form["stock"]
+        description = request.form["description"]
+
+        image = request.files["image"]
+        filename = secure_filename(image.filename)
+        image.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+
+        new_product = Product(
+            name=name,
+            mrp=mrp,
+            price=price,
+            stock=stock,
+            image=filename,
+            description=description
         )
-        db.session.add(product)
+
+        db.session.add(new_product)
         db.session.commit()
+
         flash("Product added successfully")
         return redirect(url_for("admin_dashboard"))
 
@@ -322,19 +340,27 @@ def admin_add_product():
 @app.route("/admin/product/edit/<int:id>", methods=["GET", "POST"])
 @login_required
 def admin_edit_product(id):
-    admin_required()
+    if not current_user.is_admin:
+        abort(403)
+
     product = Product.query.get_or_404(id)
 
     if request.method == "POST":
         product.name = request.form["name"]
-        product.mrp = int(request.form["mrp"])
-        product.price = int(request.form["price"])
-        product.stock = int(request.form["stock"])
-        product.image = request.form["image"]
+        product.mrp = request.form["mrp"]
+        product.price = request.form["price"]
+        product.stock = request.form["stock"]
         product.description = request.form["description"]
 
+        image_file = request.files.get("image")
+        if image_file and image_file.filename != "":
+            filename = secure_filename(image_file.filename)
+            image_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+            image_file.save(image_path)
+            product.image = filename
+
         db.session.commit()
-        flash("Product updated successfully")
+        flash("Product updated")
         return redirect(url_for("admin_dashboard"))
 
     return render_template("admin/edit_product.html", product=product)

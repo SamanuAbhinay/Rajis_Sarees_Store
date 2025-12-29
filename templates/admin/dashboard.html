@@ -3,12 +3,14 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
   <h2>Admin Dashboard</h2>
-  <a href="/admin/product/add" class="btn btn-success">
-    ➕ Add New Product
-  </a>
+  <a href="{{ url_for('admin_add_product') }}"
+   class="btn btn-success">
+  ➕ Add New Product
+</a>
+
 </div>
 
-<div class="table-responsive">
+<div class="table-responsive admin-table">
   <table class="table table-bordered align-middle">
     <thead class="table-dark">
       <tr>
@@ -25,8 +27,10 @@
       {% for product in products %}
       <tr>
         <td>
-          <img src="{{ product.image }}" width="70" class="rounded">
-        </td>
+  <img src="{{ url_for('static', filename='uploads/' + product.image) }}"
+       width="70"
+       class="rounded">
+</td>
 
         <td>
           <strong>{{ product.name }}</strong><br>
@@ -49,39 +53,38 @@
         </td>
 
         <td>
-          <form
-            method="POST"
-            action="/admin/update-stock/{{ product.id }}"
-            class="d-flex gap-2"
-          >
-            <input
-              type="number"
-              name="stock"
-              min="0"
-              class="form-control form-control-sm"
-              placeholder="New stock"
-              required
-            >
-            <button class="btn btn-sm btn-primary">Update</button>
-          </form>
-        </td>
+  <form method="POST"
+        action="/admin/update-stock/{{ product.id }}"
+        class="admin-stock-form">
 
-        <td>
-          <a
-            href="/admin/product/edit/{{ product.id }}"
-            class="btn btn-sm btn-warning"
-          >
-            ✏️ Edit
-          </a>
+    <input
+      type="number"
+      name="stock"
+      min="0"
+      class="form-control form-control-sm"
+      placeholder="New stock"
+      required
+    >
 
-          <a
-            href="/admin/product/delete/{{ product.id }}"
-            class="btn btn-sm btn-danger"
-            onclick="return confirm('Delete this product?')"
-          >
-            🗑 Delete
-          </a>
-        </td>
+    <button type="submit" class="btn btn-sm btn-primary">
+      Update
+    </button>
+
+  </form>
+</td>
+<td>
+  <div class="admin-actions">
+    <a href="/admin/product/edit/{{ product.id }}"
+       class="btn btn-warning btn-sm">✏️ Edit</a>
+
+    <a href="/admin/product/delete/{{ product.id }}"
+       class="btn btn-danger btn-sm"
+       onclick="return confirm('Delete this product?')">
+       🗑 Delete
+    </a>
+  </div>
+</td>
+
       </tr>
       {% endfor %}
     </tbody>

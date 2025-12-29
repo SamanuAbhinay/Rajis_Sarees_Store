@@ -2,42 +2,49 @@
 
 {% block content %}
 
-<div class="row g-4">
+<div class="container my-4">
+  <div class="row">
 
-  {% for product in sarees %}
-  <div class="col-md-3 col-sm-6">
+    {% for product in sarees %}
+    <div class="col-md-3 col-6 mb-4">
+      <div class="card product-card h-100">
 
-    <div class="card product-card h-100">
+        <a href="{{ url_for('product_details', product_id=product.id) }}">
+          <img src="{{ url_for('static', filename='uploads/' + product.image) }}"
+               class="card-img-top"
+               alt="{{ product.name }}">
+        </a>
 
-      <img src="{{ product.image }}" class="card-img-top" alt="{{ product.name }}">
+        <div class="card-body text-center">
+          <h6 class="card-title">
+            <a href="{{ url_for('product_details', product_id=product.id) }}"
+               class="text-decoration-none text-dark">
+              {{ product.name }}
+            </a>
+          </h6>
 
-      <div class="card-body">
+          <p class="mb-1">
+            <del class="text-muted">₹{{ product.original_price }}</del>
+            <span class="text-danger fw-bold">₹{{ product.price }}</span>
+          </p>
 
-        <h6 class="card-title">{{ product.name }}</h6>
-
-        <p class="mb-1 fw-bold">₹{{ product.price }}</p>
-
-        {% if product.stock <= 3 %}
-          <span class="badge bg-danger">Only {{ product.stock }} left</span>
-        {% endif %}
-
-        <!-- ❤️ Wishlist -->
+            <!-- ❤️ Wishlist -->
         <form method="POST" action="/wishlist/toggle/{{ product.id }}">
           <button class="btn btn-light btn-sm mt-2">❤️</button>
         </form>
 
-        <!-- View Product -->
-        <a href="/product/{{ product.id }}" class="btn btn-dark btn-sm w-100 mt-2">
-          View
-        </a>
+          <a href="{{ url_for('product_details', product_id=product.id) }}"
+             class="btn btn-outline-dark btn-sm mt-2">
+            View Details
+          </a>
+        </div>
 
       </div>
 
     </div>
+    {% endfor %}
 
   </div>
-  {% endfor %}
-
 </div>
 
 {% endblock %}

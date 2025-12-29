@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Add Product</h2>
+
+<form method="POST" enctype="multipart/form-data">
+
+  <input name="name" class="form-control mb-2"
+         placeholder="Product Name" required>
+
+  <input name="mrp" type="number" class="form-control mb-2"
+         placeholder="MRP" required>
+
+  <input name="price" type="number" class="form-control mb-2"
+         placeholder="Selling Price" required>
+
+  <input name="stock" type="number" class="form-control mb-2"
+         placeholder="Stock" required>
+
+  <input type="file" name="image"
+         class="form-control mb-2" required>
+
+  <textarea name="description"
+            class="form-control mb-3"
+            placeholder="Description"></textarea>
+
+  <button class="btn btn-success">Add Product</button>
+
+</form>
+
+{% endblock %}
