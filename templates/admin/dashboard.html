@@ -27,7 +27,13 @@
       {% for product in products %}
       <tr>
         <td>
-  <img src="{{ url_for('static', filename='uploads/' + product.image) }}"
+<img
+      src="{{ url_for('static',
+            filename='uploads/' ~ product.name|lower|replace(' ', '') ~ '.jpg') }}"
+      class="img-fluid product-img w-100"
+      alt="{{ product.name }}"
+      loading="lazy"
+      onerror="this.onerror=null;this.src='/static/uploads/default.jpg';"
        width="70"
        class="rounded">
 </td>
