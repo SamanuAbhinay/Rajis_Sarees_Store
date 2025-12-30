@@ -8,8 +8,14 @@
     <div class="col-6 col-md-3 mb-3">
       <div class="card product-card">
 
-        <img src="{{ item.product.image }}" class="card-img-top">
-
+        <img
+          src="{{ url_for('static',
+                filename='uploads/' ~ item.product.name|lower|replace(' ', '') ~ '.jpg') }}"
+          class="card-img-top product-img"
+          alt="{{ item.product.name }}"
+          loading="lazy"
+          onerror="this.onerror=null;this.src='/static/uploads/cottonhandloomsaree.jpg';"
+        >
         <div class="card-body">
           <h6 class="product-name">{{ item.product.name }}</h6>
 

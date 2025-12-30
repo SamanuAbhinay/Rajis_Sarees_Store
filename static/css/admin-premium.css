@@ -1,0 +1,87 @@
+/* ===== ADMIN PREMIUM THEME ===== */
+
+.admin-wrapper {
+  background: #f4f6f9;
+  padding: 20px;
+  border-radius: 18px;
+}
+
+/* Header */
+.admin-header {
+  background: linear-gradient(135deg, #7b1e3a, #b83250);
+  color: white;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.15);
+}
+
+/* Add product button */
+.btn-add {
+  background: #fff;
+  color: #7b1e3a;
+  border-radius: 30px;
+  font-weight: 600;
+  padding: 6px 16px;
+}
+
+.btn-add:hover {
+  background: #f8e7ec;
+}
+
+/* Table */
+.admin-table table {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0,0,0,.08);
+}
+
+.admin-table th {
+  background: #7b1e3a;
+  color: white;
+  font-weight: 600;
+}
+
+.admin-table td {
+  vertical-align: middle;
+}
+
+/* Product image */
+.product-img {
+  max-width: 70px;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0,0,0,.15);
+}
+
+/* Stock form */
+.admin-stock-form {
+  display: flex;
+  gap: 6px;
+}
+
+.admin-stock-form input {
+  border-radius: 10px;
+}
+
+/* Action buttons */
+.admin-actions a {
+  border-radius: 20px;
+  padding: 4px 12px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .admin-stock-form {
+    flex-direction: column;
+  }
+
+  .admin-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .admin-header h2 {
+    font-size: 20px;
+  }
+}

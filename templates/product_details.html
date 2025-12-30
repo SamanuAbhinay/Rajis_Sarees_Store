@@ -6,8 +6,14 @@
   <div class="row g-4">
 
     <div class="col-md-6">
-      <img src="{{ url_for('static', filename='uploads/' + product.image) }}"
-           class="img-fluid rounded-4 shadow">
+      <img
+        src="{{ url_for('static',
+              filename='uploads/' ~ product.name|lower|replace(' ', '') ~ '.jpg') }}"
+        class="img-fluid product-img w-100"
+        alt="{{ product.name }}"
+        loading="lazy"
+        onerror="this.onerror=null;this.src='/static/uploads/cottonhandloomsaree.jpg';"
+      >
     </div>
 
 
@@ -23,9 +29,36 @@
 
       <p><strong>Stock:</strong> {{ product.stock }}</p>
 
-      <button class="btn btn-premium btn-lg w-100">
-        🛒 Add to Cart
-      </button>
+      <form
+          action="{{ url_for('add_to_cart', product_id=product.id) }}"
+          method="POST"
+          class="mt-4"
+        >
+          <div class="d-flex align-items-center gap-3 mb-3">
+
+            <label class="fw-semibold mb-0">Quantity:</label>
+
+            <input
+              type="number"
+              name="quantity"
+              value="1"
+              min="1"
+              max="{{ product.stock }}"
+              class="form-control"
+              style="max-width: 120px;"
+              required
+            >
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-premium btn-lg w-100 d-flex align-items-center justify-content-center gap-2"
+            {% if product.stock == 0 %} disabled {% endif %}
+          >
+            🛒 Add to Cart
+          </button>
+        </form>
+
     </div>
 
   </div>
