@@ -10,9 +10,9 @@
     {% for product in sarees %}
 
     <div class="col-6 col-md-4 col-lg-3">
-      <div class="product-card h-100 border rounded shadow-sm">
+  <div class="product-card h-100">
 
-        <!-- Product Image -->
+    <!-- Product Image -->
         <!-- <img
           src="{{ url_for('static', filename='uploads/' ~ product.image) }}"
           class="img-fluid product-img w-100"
@@ -33,30 +33,30 @@
         loading="lazy"
         onerror="this.onerror=null;this.src='/static/uploads/cottonhandloomsaree.jpg';"
       >
+    <!-- Product Details -->
+    <div class="p-3 text-center">
 
-        <div class="p-3 text-center">
-          <h6 class="mb-1">{{ product.name }}</h6>
+      <h6 class="mb-1">{{ product.name }}</h6>
 
-          <p class="mb-2">
-            <del class="text-muted">₹{{ product.mrp }}</del>
-            <span class="text-danger fw-bold ms-1">₹{{ product.price }}</span>
-          </p>
+      <p class="price mb-2">
+        <del>₹{{ product.mrp }}</del>
+        <span class="text-danger">₹{{ product.price }}</span>
+      </p>
 
-          <form method="POST" action="/wishlist/toggle/{{ product.id }}">
-            <button type="submit" class="btn btn-outline-danger btn-sm w-100">
-              ❤️ Wishlist
-            </button>
-          </form>
+      <a href="{{ url_for('product_details', product_id=product.id) }}"
+         class="btn btn-premium w-100 mb-2">
+        View Details
+      </a>
 
-          <a
-            href="{{ url_for('product_details', product_id=product.id) }}"
-            class="btn btn-dark btn-sm w-100 mt-2">
-            View Details
-          </a>
-        </div>
+      <form method="POST" action="/wishlist/toggle/{{ product.id }}">
+        <button class="btn btn-outline-danger btn-sm w-100">
+          ❤️ Wishlist
+        </button>
+      </form>
 
-      </div>
     </div>
+  </div>
+</div>
 
     {% endfor %}
 

@@ -1,0 +1,84 @@
+:root {
+  --primary: #7b1e3a;      /* wine maroon */
+  --secondary: #f7e7ce;    /* silk beige */
+  --dark: #1c1c1c;
+  --light: #ffffff;
+}
+
+/* Global */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #fafafa;
+  color: var(--dark);
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Product Card */
+.product-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+  transition: all 0.35s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+}
+
+/* Image */
+.product-img {
+  height: 280px;
+  width: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.product-card:hover .product-img {
+  transform: scale(1.05);
+}
+
+/* Buttons */
+.btn-premium {
+  background: var(--primary);
+  color: white;
+  border-radius: 30px;
+  padding: 8px 18px;
+  border: none;
+}
+
+.btn-premium:hover {
+  background: #5f162d;
+  color: white;
+}
+
+/* Price */
+.price {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.price del {
+  color: #999;
+  font-size: 14px;
+}
+
+/* Badge */
+.badge-premium {
+  background: var(--primary);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .product-img {
+    height: 200px;
+  }
+}
