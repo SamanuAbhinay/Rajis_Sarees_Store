@@ -7,9 +7,14 @@
 
     <!-- Product Image -->
     <div class="col-md-6 mb-4">
-      <img src="{{ url_for('static', filename='uploads/' + product.image) }}"
-           class="img-fluid rounded shadow"
-           alt="{{ product.name }}">
+      <img
+        src="{{ url_for('static',
+              filename='uploads/' ~ product.name|lower|replace(' ', '') ~ '.jpg') }}"
+        class="img-fluid w-100 rounded"
+        alt="{{ product.name }}"
+        loading="lazy"
+        onerror="this.onerror=null;this.src='/static/uploads/default.jpg';"
+      >
     </div>
 
     <!-- Product Info -->
