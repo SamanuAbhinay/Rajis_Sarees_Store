@@ -1195,3 +1195,119 @@ body {
   }
 }
 
+
+/* =====================================================
+   ORDERS PAGE – CLEAN PROFESSIONAL STYLE (APPEND ONLY)
+   Safe | Non-breaking | Production-ready
+===================================================== */
+
+/* Page heading */
+h3 {
+  font-weight: 600;
+  font-size: 1.6rem;
+  margin-bottom: 22px;
+  color: #1f2933;
+  letter-spacing: 0.3px;
+  position: relative;
+}
+
+/* Accent underline */
+h3::after {
+  content: "";
+  display: block;
+  width: 42px;
+  height: 3px;
+  margin-top: 8px;
+  background: linear-gradient(90deg, #b1275e, #e91e63);
+  border-radius: 10px;
+}
+
+/* Orders table card */
+.table {
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+}
+
+/* Header row */
+.table th {
+  background: #f6f7f9;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #555;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 16px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+/* Table cells */
+.table td {
+  padding: 18px 16px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #222;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* Last row clean */
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Hover row feedback */
+.table tbody tr {
+  transition: background 0.25s ease;
+}
+
+.table tbody tr:hover {
+  background: #fafafa;
+}
+
+/* Order ID emphasis */
+.table td:first-child {
+  font-weight: 600;
+  color: #7b1e3a;
+}
+
+/* Amount emphasis */
+.table td:last-child {
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+/* Empty state */
+p {
+  margin-top: 50px;
+  font-size: 1.05rem;
+  text-align: center;
+  color: #777;
+}
+
+/* ==========================
+   MOBILE POLISH
+========================== */
+@media (max-width: 768px) {
+
+  h3 {
+    font-size: 1.3rem;
+    text-align: center;
+  }
+
+  h3::after {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .table {
+    font-size: 0.85rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 12px;
+  }
+}

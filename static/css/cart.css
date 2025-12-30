@@ -1195,3 +1195,161 @@ body {
   }
 }
 
+/* =====================================================
+   CART PAGE – ELEGANT MODERN STYLE (APPEND ONLY)
+   No HTML / No existing CSS touched
+===================================================== */
+
+/* Page heading */
+h3 {
+  font-weight: 600;
+  font-size: 1.6rem;
+  margin-bottom: 24px;
+  color: #1f2933;
+  letter-spacing: 0.3px;
+}
+
+/* Cart table as a card */
+.table {
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+}
+
+/* Header row */
+.table th {
+  background: #f6f7f9;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #555;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 16px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+/* Body cells */
+.table td {
+  padding: 18px 16px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  vertical-align: middle;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* Last row clean */
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Row hover effect */
+.table tbody tr {
+  transition: background 0.25s ease;
+}
+
+.table tbody tr:hover {
+  background: #fafafa;
+}
+
+/* Quantity input */
+.table input[type="number"] {
+  border-radius: 999px;
+  font-size: 0.9rem;
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+}
+
+/* Update button */
+.table .btn-primary {
+  border-radius: 999px;
+  font-size: 0.75rem;
+  padding: 6px 16px;
+  font-weight: 500;
+}
+
+/* Remove button */
+.table .btn-danger {
+  border-radius: 999px;
+  font-size: 0.75rem;
+  padding: 6px 16px;
+  font-weight: 500;
+}
+
+/* Price column highlight */
+.table td:nth-child(3) {
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+/* Total amount */
+h4 {
+  margin-top: 30px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  text-align: right;
+  color: #111;
+}
+
+/* Checkout button container */
+form[action="/checkout"] {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+/* Checkout button */
+form[action="/checkout"] .btn {
+  padding: 14px 32px;
+  font-weight: 600;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.18);
+}
+
+/* Empty cart message */
+p {
+  margin-top: 50px;
+  font-size: 1.1rem;
+  text-align: center;
+  color: #777;
+}
+
+/* ==========================
+   MOBILE REFINEMENT
+========================== */
+@media (max-width: 768px) {
+
+  h3 {
+    font-size: 1.3rem;
+    text-align: center;
+  }
+
+  .table {
+    font-size: 0.85rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 12px;
+  }
+
+  .table form {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .table input {
+    width: 100% !important;
+  }
+
+  h4 {
+    text-align: center;
+  }
+
+  form[action="/checkout"] {
+    justify-content: center;
+  }
+}
