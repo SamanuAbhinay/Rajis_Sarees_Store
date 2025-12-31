@@ -112,7 +112,7 @@
       <td>{{ item.product.name }}</td>
 
       <td>
-        <form action="/update-cart/{{ item.id }}" method="POST" style="display:flex;">
+        <form action="/cart/update/{{ item.id }}" method="POST" style="display:flex;">
           <input type="number" name="quantity"
                 value="{{ item.quantity }}"
                 min="1"
@@ -125,7 +125,7 @@
       <td>₹{{ item.product.price * item.quantity }}</td>
 
       <td>
-        <a href="/remove-from-cart/{{ item.id }}"
+        <a href="/cart/remove/{{ item.id }}"
           class="btn btn-sm btn-danger">
           Remove
         </a>

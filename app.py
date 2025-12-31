@@ -243,10 +243,20 @@ def add_to_cart(product_id):
     product = Product.query.get_or_404(product_id)
     qty = int(request.form.get("quantity", 1))
 
+    if qty <= 0:
+        flash("Invalid quantity")
+        return redirect(request.referrer)
+
     item = CartItem.query.filter_by(
         user_id=current_user.id,
         product_id=product.id
     ).first()
+
+    existing_qty = item.quantity if item else 0
+
+    if existing_qty + qty > product.stock:
+        flash("Not enough stock available")
+        return redirect(request.referrer)
 
     if item:
         item.quantity += qty
@@ -260,6 +270,45 @@ def add_to_cart(product_id):
     db.session.commit()
     flash("Added to cart")
     return redirect(url_for("product_details", product_id=product.id))
+
+@app.route("/cart/update/<int:item_id>", methods=["POST"])
+@login_required
+def update_cart(item_id):
+    item = CartItem.query.get_or_404(item_id)
+
+    if item.user_id != current_user.id:
+        abort(403)
+
+    new_qty = int(request.form["quantity"])
+
+    if new_qty <= 0:
+        db.session.delete(item)
+        db.session.commit()
+        flash("Item removed from cart")
+        return redirect(url_for("cart"))
+
+    if new_qty > item.product.stock:
+        flash("Not enough stock available")
+        return redirect(url_for("cart"))
+
+    item.quantity = new_qty
+    db.session.commit()
+    flash("Cart updated")
+    return redirect(url_for("cart"))
+
+@app.route("/cart/remove/<int:item_id>")
+@login_required
+def remove_cart_item(item_id):
+    item = CartItem.query.get_or_404(item_id)
+
+    if item.user_id != current_user.id:
+        abort(403)
+
+    db.session.delete(item)
+    db.session.commit()
+    flash("Item removed")
+    return redirect(url_for("cart"))
+
 
 @app.route("/cart")
 @login_required
@@ -300,18 +349,39 @@ def wishlist():
 @login_required
 def checkout():
     items = CartItem.query.filter_by(user_id=current_user.id).all()
-    total = sum(i.product.price * i.quantity for i in items)
 
-    db.session.add(Order(
+    if not items:
+        flash("Your cart is empty")
+        return redirect(url_for("cart"))
+
+    total = 0
+
+    # 🔐 STOCK VALIDATION (before payment simulation)
+    for item in items:
+        if item.quantity > item.product.stock:
+            flash(f"Insufficient stock for {item.product.name}")
+            return redirect(url_for("cart"))
+
+    # 🧾 PLACE ORDER + REDUCE STOCK
+    for item in items:
+        item.product.stock -= item.quantity
+        total += item.product.price * item.quantity
+
+    order = Order(
         user_id=current_user.id,
         total_amount=total
-    ))
+    )
 
+    db.session.add(order)
+
+    # Clear cart
     CartItem.query.filter_by(user_id=current_user.id).delete()
+
     db.session.commit()
 
     flash("Order placed successfully")
     return redirect(url_for("orders"))
+
 
 @app.route("/orders")
 @login_required
