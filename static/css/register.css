@@ -1299,122 +1299,113 @@ body {
 }
 
 /* =====================================================
-   ADMIN ADD / EDIT PRODUCT FORM – PROFESSIONAL STYLE
-   Append-only CSS | Safe | Clean SaaS Look
+   REGISTER PAGE – ELEGANT PROFESSIONAL STYLE
+   Append-only CSS | Safe | No conflicts
 ===================================================== */
 
-/* Page heading */
-h2.mb-4 {
-  font-weight: 600;
-  color: #1f2933;
-  letter-spacing: 0.4px;
-  position: relative;
-}
-
-/* Subtle accent underline */
-h2.mb-4::after {
-  content: "";
-  display: block;
-  width: 48px;
-  height: 3px;
-  margin-top: 8px;
-  background: linear-gradient(90deg, #0d6efd, #6ea8fe);
-  border-radius: 10px;
-}
-
-/* Form card refinement */
-form.card {
-  border-radius: 18px;
-  border: none;
+/* Auth container refinement */
+.auth-container {
   background: linear-gradient(
     to bottom right,
     #ffffff,
     #fafafa
   );
-  box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  border-radius: 20px;
+  padding: 34px 36px;
+  box-shadow: 0 20px 45px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* Soft hover lift */
-form.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 28px 65px rgba(0,0,0,0.15);
+.auth-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 28px 60px rgba(0,0,0,0.15);
 }
 
-/* Labels */
-form.card .form-label {
+/* Heading */
+.auth-container h2 {
   font-weight: 600;
-  font-size: 0.85rem;
-  color: #374151;
-  letter-spacing: 0.03em;
+  font-size: 1.7rem;
+  margin-bottom: 22px;
+  text-align: center;
+  color: #1f2933;
+  position: relative;
 }
 
-/* Inputs & textarea */
-form.card .form-control {
+/* Accent underline */
+.auth-container h2::after {
+  content: "";
+  display: block;
+  width: 46px;
+  height: 3px;
+  background: linear-gradient(90deg, #b1275e, #e91e63);
+  margin: 10px auto 0;
+  border-radius: 10px;
+}
+
+/* Inputs */
+.auth-container input {
   border-radius: 999px;
-  padding: 10px 16px;
-  font-size: 0.9rem;
+  padding: 12px 18px;
+  font-size: 0.95rem;
   border: 1px solid #ddd;
   transition: all 0.3s ease;
 }
 
-/* Textarea adjustment */
-form.card textarea.form-control {
-  border-radius: 14px;
-}
-
 /* Focus state */
-form.card .form-control:focus {
-  border-color: #0d6efd;
-  box-shadow: 0 0 0 3px rgba(13,110,253,0.2);
+.auth-container input:focus {
+  border-color: #b1275e;
+  box-shadow: 0 0 0 3px rgba(177,39,94,0.2);
   outline: none;
 }
 
-/* Primary button */
-form.card .btn-primary {
+/* Register button */
+.auth-container button {
+  margin-top: 10px;
   border-radius: 999px;
-  padding: 8px 22px;
+  padding: 12px;
   font-weight: 600;
   letter-spacing: 0.05em;
-  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #b1275e, #e91e63);
+  border: none;
+  transition: all 0.35s ease;
 }
 
-/* Primary button hover */
-form.card .btn-primary:hover {
+/* Button hover */
+.auth-container button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(13,110,253,0.4);
+  box-shadow: 0 14px 30px rgba(233,30,99,0.35);
+  background: linear-gradient(135deg, #9e214e, #d81b60);
 }
 
-/* Cancel button */
-form.card .btn-secondary {
-  border-radius: 999px;
-  padding: 8px 18px;
+/* Footer text */
+.auth-container p {
+  margin-top: 18px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Login link */
+.auth-container p a {
   font-weight: 600;
-  transition: all 0.3s ease;
+  color: #b1275e;
+  text-decoration: none;
 }
 
-/* Cancel hover */
-form.card .btn-secondary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(108,117,125,0.35);
+.auth-container p a:hover {
+  text-decoration: underline;
 }
 
 /* ==========================
-   MOBILE ADMIN FORM POLISH
+   MOBILE POLISH
 ========================== */
 @media (max-width: 768px) {
 
-  form.card {
-    padding: 20px !important;
+  .auth-container {
+    padding: 26px 22px;
   }
 
-  h2.mb-4 {
-    text-align: center;
-  }
-
-  h2.mb-4::after {
-    margin-left: auto;
-    margin-right: auto;
+  .auth-container h2 {
+    font-size: 1.5rem;
   }
 }
-

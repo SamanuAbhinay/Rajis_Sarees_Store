@@ -180,7 +180,7 @@ def add_products():
             price=1999,
             stock=200,
             image="https://via.placeholder.com/300",
-            description="Wedding saree"
+            description="Renowned for their luxurious silk and intricate zari work, Banarasi sarees are traditionally woven in Varanasi. Ideal for weddings and grand occasions, they often feature Mughal-inspired motifs like florals, bel, and jhallar."
         ),
         Product(
             name="Cotton Handloom Saree",
@@ -197,6 +197,38 @@ def add_products():
             stock=200,
             image="https://via.placeholder.com/300",
             description="Party Ware Sarees"
+        ),
+        Product(
+            name="Phulkari Saree",
+            mrp=2999,
+            price=1999,
+            stock=200,
+            image="https://via.placeholder.com/300",
+            description="Phulkari, meaning ‘flower work,’ is known for its colourful embroidery using silk threads. Originally a form of dupatta decoration, this style is now beautifully adapted into sarees."
+        ),
+        Product(
+            name="Chanderi Saree",
+            mrp=5999,
+            price=4999,
+            stock=200,
+            image="https://via.placeholder.com/300",
+            description="Chanderi sarees are known for their lightweight texture and intricate patterns. They are traditionally woven in the city of Chanderi, Madhya Pradesh, and are often made from silk or cotton."
+        ),
+        Product(
+            name="Bhagalpuri Saree",
+            mrp=9999,
+            price=8999,
+            stock=200,
+            image="https://via.placeholder.com/300",
+            description="Celebrated for their unique texture and natural sheen, Bhagalpuri sarees are handwoven in Bhagalpur, Bihar. Made from Tussar silk, these sarees often feature traditional motifs inspired by nature."
+        ),
+         Product(
+            name="Bandhani Saree",
+            mrp=10999,
+            price=9999,
+            stock=200,
+            image="https://via.placeholder.com/300",
+            description="Celebrated for their vibrant colors and intricate tie-dye patterns, Bandhani sarees are traditionally crafted in Rajasthan and Gujarat. The process involves tying small sections of fabric before dyeing, resulting in distinctive designs like dots, waves, and stripes."
         )
     ]
 
@@ -227,7 +259,7 @@ def add_to_cart(product_id):
 
     db.session.commit()
     flash("Added to cart")
-    return redirect(url_for("cart"))
+    return redirect(url_for("product_details", product_id=product.id))
 
 @app.route("/cart")
 @login_required
@@ -254,6 +286,7 @@ def toggle_wishlist(product_id):
         ))
 
     db.session.commit()
+    flash("Item Added to Wishlist" if not item else "Item Removed from Wishlist")
     return redirect(request.referrer)
 
 @app.route("/wishlist")

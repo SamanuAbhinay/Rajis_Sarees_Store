@@ -1418,3 +1418,135 @@ form.card .btn-secondary:hover {
   }
 }
 
+/* =====================================================
+   ADMIN EDIT PRODUCT (WITH IMAGE UPLOAD)
+   Append-only CSS | Safe | Professional Admin Look
+===================================================== */
+
+/* Page heading */
+h2.mb-4 {
+  font-weight: 600;
+  color: #1f2933;
+  letter-spacing: 0.4px;
+  position: relative;
+}
+
+/* Accent underline */
+h2.mb-4::after {
+  content: "";
+  display: block;
+  width: 48px;
+  height: 3px;
+  margin-top: 8px;
+  background: linear-gradient(90deg, #0d6efd, #6ea8fe);
+  border-radius: 10px;
+}
+
+/* Form container */
+form[enctype="multipart/form-data"] {
+  max-width: 620px;
+  background: linear-gradient(to bottom right, #ffffff, #fafafa);
+  padding: 28px;
+  border-radius: 18px;
+  box-shadow: 0 20px 55px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Subtle lift */
+form[enctype="multipart/form-data"]:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 30px 70px rgba(0,0,0,0.15);
+}
+
+/* Labels */
+form[enctype="multipart/form-data"] .form-label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #374151;
+  letter-spacing: 0.03em;
+}
+
+/* Inputs & textarea */
+form[enctype="multipart/form-data"] .form-control {
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  border: 1px solid #ddd;
+  transition: all 0.3s ease;
+}
+
+/* Textarea shape */
+form[enctype="multipart/form-data"] textarea.form-control {
+  border-radius: 14px;
+}
+
+/* Focus state */
+form[enctype="multipart/form-data"] .form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 3px rgba(13,110,253,0.2);
+  outline: none;
+}
+
+/* File input */
+form[enctype="multipart/form-data"] input[type="file"] {
+  display: block;
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px dashed #cfd8e3;
+  background: #f9fafb;
+  cursor: pointer;
+}
+
+/* File input hover */
+form[enctype="multipart/form-data"] input[type="file"]:hover {
+  background: #f1f5f9;
+}
+
+/* Primary button */
+form[enctype="multipart/form-data"] .btn-primary {
+  border-radius: 999px;
+  padding: 8px 22px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+}
+
+/* Primary hover */
+form[enctype="multipart/form-data"] .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(13,110,253,0.4);
+}
+
+/* Cancel button */
+form[enctype="multipart/form-data"] .btn-secondary {
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+form[enctype="multipart/form-data"] .btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(108,117,125,0.35);
+}
+
+/* ==========================
+   MOBILE POLISH
+========================== */
+@media (max-width: 768px) {
+
+  form[enctype="multipart/form-data"] {
+    padding: 20px;
+  }
+
+  h2.mb-4 {
+    text-align: center;
+  }
+
+  h2.mb-4::after {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
