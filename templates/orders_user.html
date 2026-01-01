@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3 class="mb-4">My Orders</h3>
+
+{% for order in orders %}
+<div class="card mb-3 shadow-sm">
+  <div class="card-body">
+
+    <div class="d-flex justify-content-between">
+      <strong>Order ID:</strong> {{ order.order_code }}
+      <span class="badge bg-info">{{ order.payment_mode }}</span>
+    </div>
+
+    <p>Status:
+      {% if order.payment_status == "Pending" %}
+        <span class="badge bg-warning">Pending</span>
+      {% else %}
+        <span class="badge bg-success">Paid</span>
+      {% endif %}
+    </p>
+
+    <ul class="list-group mb-2">
+      {% for item in order.items %}
+      <li class="list-group-item d-flex justify-content-between">
+        {{ item.product_name }} × {{ item.quantity }}
+        <strong>₹{{ item.price * item.quantity }}</strong>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <h5>Total: ₹{{ order.total_amount }}</h5>
+    <small class="text-muted">{{ order.created_at.strftime('%d %b %Y') }}</small>
+
+  </div>
+</div>
+{% else %}
+<p>No orders yet.</p>
+{% endfor %}
+
+{% endblock %}

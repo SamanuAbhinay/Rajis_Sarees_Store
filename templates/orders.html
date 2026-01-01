@@ -97,25 +97,57 @@
 <div class="container mt-4">
   {% block content %}
 
-<h3>Your Orders</h3>
+<h3>Orders</h3>
 
-{% if orders %}
-<table class="table">
-  <tr>
-    <th>Order ID</th>
-    <th>Total Amount</th>
-  </tr>
+<table class="table table-bordered align-middle">
+  <thead class="table-dark">
+    <tr>
+      <th>Order ID</th>
+      <th>User</th>
+      <th>Email</th>
+      <th>Payment</th>
+      <th>Status</th>
+      <th>Items</th>
+      <th>Total</th>
+      <th>Action</th>
+    </tr>
+  </thead>
 
   {% for order in orders %}
-  <tr>
-    <td>#{{ order.id }}</td>
+  <tr class="{% if order.payment_status == 'Pending' %}table-warning{% endif %}">
+    <td>{{ order.order_code }}</td>
+    <td>User ID: {{ order.user_id }}</td>
+    <td>{{ order.user.email }}</td>
+    <td>{{ order.payment_mode }}</td>
+
+    <td>
+      {% if order.payment_mode == "COD" %}
+        <span class="badge bg-danger">Payment Pending</span>
+      {% else %}
+        <span class="badge bg-warning">Verify Payment</span>
+      {% endif %}
+    </td>
+
+    <td>
+      {% for item in order.items %}
+        {{ item.product_name }} × {{ item.quantity }}<br>
+      {% endfor %}
+    </td>
+
     <td>₹{{ order.total_amount }}</td>
+
+    <td>
+      {% if order.payment_mode == "UPI" and order.payment_status == "Pending" %}
+        <a href="/admin/verify-payment/{{ order.id }}"
+           class="btn btn-success btn-sm">
+           ✔ Verify
+        </a>
+      {% endif %}
+    </td>
   </tr>
   {% endfor %}
 </table>
-{% else %}
-<p>No orders yet</p>
-{% endif %}
+
 
 {% endblock %}
 

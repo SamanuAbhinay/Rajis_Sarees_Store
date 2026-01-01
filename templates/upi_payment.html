@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container text-center mt-5">
+
+  <h3 class="mb-3">Scan & Pay via UPI</h3>
+
+  <div class="card shadow-sm p-4 d-inline-block">
+    <img
+  src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=rajisarees@upi&pn=Raji%27s%20Sarees&cu=INR"
+  alt="UPI QR"
+      width="250"
+      alt="UPI QR Code"
+      class="img-fluid mb-3"
+    >
+
+    <p class="mb-1">
+      UPI ID:
+      <strong>rajisarees@upi</strong>
+    </p>
+
+    <p class="text-muted small">
+      Amount will be matched with your order automatically
+    </p>
+
+    <div class="alert alert-warning mt-3">
+      After payment, admin will verify and confirm your order.
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

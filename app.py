@@ -1,4 +1,6 @@
+from datetime import datetime
 import os
+import time
 from werkzeug.utils import secure_filename
 from flask import Flask, abort, render_template, redirect, url_for, request, flash
 from flask_sqlalchemy import SQLAlchemy
@@ -45,6 +47,9 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(200), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
+    orders = db.relationship("Order", back_populates="user")
+
+
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
@@ -71,17 +76,63 @@ class CartItem(db.Model):
 
     product = db.relationship("Product")
 
+
 class Wishlist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey("product.id"), nullable=False)
+
     product = db.relationship("Product")
 
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, nullable=False)
-    total_amount = db.Column(db.Integer, nullable=False)
+    order_code = db.Column(db.String(20), unique=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
+    payment_mode = db.Column(db.String(20))
+    payment_status = db.Column(db.String(20))
+    total_amount = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship("User", back_populates="orders")
+    items = db.relationship("OrderItem", backref="order", lazy=True)
+
+
+class OrderItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey("order.id"), nullable=False)
+
+    product_name = db.Column(db.String(150))
+    price = db.Column(db.Integer)
+    quantity = db.Column(db.Integer)
+# -------------------------------------------------
+
+def create_order(payment_mode, payment_status):
+    cart_items = CartItem.query.filter_by(user_id=current_user.id).all()
+
+    order = Order(
+        order_code=f"ORD{int(time.time())}",
+        user_id=current_user.id,
+        payment_mode=payment_mode,
+        payment_status=payment_status,
+        total_amount=sum(i.product.price * i.quantity for i in cart_items)
+    )
+
+    db.session.add(order)
+    db.session.commit()
+
+    for item in cart_items:
+        db.session.add(OrderItem(
+            order_id=order.id,
+            product_name=item.product.name,
+            price=item.product.price,
+            quantity=item.quantity
+        ))
+
+    CartItem.query.filter_by(user_id=current_user.id).delete()
+    db.session.commit()
+
+    return order
 
 # -------------------------------------------------
 # USER LOADER
@@ -356,25 +407,39 @@ def checkout():
 
     total = 0
 
-    # 🔐 STOCK VALIDATION (before payment simulation)
+    # STOCK VALIDATION
     for item in items:
         if item.quantity > item.product.stock:
             flash(f"Insufficient stock for {item.product.name}")
             return redirect(url_for("cart"))
 
-    # 🧾 PLACE ORDER + REDUCE STOCK
+    # CREATE ORDER
+    order = Order(
+    order_code="ORD" + datetime.now().strftime("%Y%m%d%H%M%S"),
+    user_id=current_user.id,
+    payment_mode="COD",
+    payment_status="Pending",
+    total_amount=0
+)
+
+    db.session.add(order)
+    db.session.flush()  # IMPORTANT
+
+    # CREATE ORDER ITEMS
     for item in items:
         item.product.stock -= item.quantity
         total += item.product.price * item.quantity
 
-    order = Order(
-        user_id=current_user.id,
-        total_amount=total
-    )
+        db.session.add(OrderItem(
+            order_id=order.id,
+            product_name=item.product.name,
+            price=item.product.price,
+            quantity=item.quantity
+        ))
 
-    db.session.add(order)
+    order.total_amount = total
 
-    # Clear cart
+    # CLEAR CART
     CartItem.query.filter_by(user_id=current_user.id).delete()
 
     db.session.commit()
@@ -386,8 +451,30 @@ def checkout():
 @app.route("/orders")
 @login_required
 def orders():
-    orders = Order.query.filter_by(user_id=current_user.id).all()
-    return render_template("orders.html", orders=orders)
+    orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.created_at.desc()).all()
+    return render_template("orders_user.html", orders=orders)
+
+
+
+@app.route("/place-order/cod", methods=["POST"])
+@login_required
+def place_order_cod():
+    create_order("COD", "Pending")
+    flash("Order placed with Cash on Delivery")
+    return redirect(url_for("home"))
+
+@app.route("/place-order/upi", methods=["POST"])
+@login_required
+def place_order_upi():
+    order = create_order("UPI", "Pending")
+    flash("Order placed via UPI. Please complete the payment.")
+    return redirect(url_for("upi_payment", order_code=order.order_code))
+
+@app.route("/upi-payment/<order_code>")
+@login_required
+def upi_payment(order_code):
+    order = Order.query.filter_by(order_code=order_code).first_or_404()
+    return render_template("upi_payment.html", order=order)
 
 # ---------- ADMIN ----------
 @app.route("/admin/dashboard")
@@ -490,6 +577,28 @@ def admin_update_stock(id):
 
     flash("Stock updated successfully")
     return redirect(url_for("admin_dashboard"))
+
+@app.route("/admin/orders")
+@login_required
+def admin_orders():
+    if not current_user.is_admin:
+        abort(403)
+
+    orders = Order.query.order_by(Order.created_at.desc()).all()
+    return render_template("orders_admin.html", orders=orders)
+
+
+
+@app.route("/admin/verify-payment/<int:id>")
+@login_required
+def verify_payment(id):
+    admin_required()
+    order = Order.query.get_or_404(id)
+    order.payment_status = "Paid"
+    db.session.commit()
+    flash("Payment verified")
+    return redirect(url_for("admin_orders"))
+
 
 # -------------------------------------------------
 # INIT DB

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3>Checkout</h3>
+
+<div class="card p-4 mb-4">
+  <h5>Total Amount: ₹{{ total }}</h5>
+</div>
+
+<!-- CASH ON DELIVERY -->
+<form action="/place-order/cod" method="POST">
+  <button class="btn btn-success w-100 mb-3">
+    💵 Cash on Delivery
+  </button>
+</form>
+
+<!-- UPI MANUAL -->
+<form action="/place-order/upi" method="POST">
+  <button class="btn btn-primary w-100">
+    📱 Pay via UPI QR
+  </button>
+</form>
+
+{% endblock %}
