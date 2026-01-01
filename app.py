@@ -588,6 +588,21 @@ def admin_orders():
     return render_template("orders_admin.html", orders=orders)
 
 
+@app.route("/admin/order/update-status/<int:order_id>", methods=["POST"])
+@login_required
+def admin_update_order_status(order_id):
+    if not current_user.is_admin:
+        abort(403)
+
+    order = Order.query.get_or_404(order_id)
+    new_status = request.form.get("payment_status")
+
+    if new_status in ["Pending", "Paid"]:
+        order.payment_status = new_status
+        db.session.commit()
+        flash("Order payment status updated")
+
+    return redirect(url_for("admin_orders"))
 
 @app.route("/admin/verify-payment/<int:id>")
 @login_required

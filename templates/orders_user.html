@@ -7,20 +7,28 @@
 <div class="card mb-3 shadow-sm">
   <div class="card-body">
 
-    <div class="d-flex justify-content-between">
-      <strong>Order ID:</strong> {{ order.order_code }}
-      <span class="badge bg-info">{{ order.payment_mode }}</span>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <strong>Order ID: {{ order.order_code }}</strong>
+
+      <span class="badge bg-secondary">
+        {{ order.payment_mode }}
+      </span>
     </div>
 
-    <p>Status:
-      {% if order.payment_status == "Pending" %}
-        <span class="badge bg-warning">Pending</span>
-      {% else %}
-        <span class="badge bg-success">Paid</span>
-      {% endif %}
+    <p class="mb-2">
+      Payment Status:
+      <span class="badge
+        {% if order.payment_status == 'Paid' %}
+          bg-success
+        {% else %}
+          bg-warning
+        {% endif %}
+      ">
+        {{ order.payment_status }}
+      </span>
     </p>
 
-    <ul class="list-group mb-2">
+    <ul class="list-group mb-3">
       {% for item in order.items %}
       <li class="list-group-item d-flex justify-content-between">
         {{ item.product_name }} × {{ item.quantity }}
@@ -30,7 +38,9 @@
     </ul>
 
     <h5>Total: ₹{{ order.total_amount }}</h5>
-    <small class="text-muted">{{ order.created_at.strftime('%d %b %Y') }}</small>
+    <small class="text-muted">
+      Ordered on {{ order.created_at.strftime('%d %b %Y') }}
+    </small>
 
   </div>
 </div>

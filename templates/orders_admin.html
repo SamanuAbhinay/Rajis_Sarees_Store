@@ -3,14 +3,15 @@
 
 <h2 class="mb-4">All Orders</h2>
 
+<div class="table-responsive">
 <table class="table table-hover align-middle">
 <thead class="table-dark">
 <tr>
   <th>Order ID</th>
   <th>User</th>
   <th>Email</th>
-  <th>Payment</th>
-  <th>Status</th>
+  <th>Payment Mode</th>
+  <th>Payment Status</th>
   <th>Amount</th>
   <th>Items</th>
 </tr>
@@ -19,32 +20,54 @@
 <tbody>
 {% for order in orders %}
 <tr>
-  <td>{{ order.order_code }}</td>
+
+  <td><strong>{{ order.order_code }}</strong></td>
+
   <td>{{ order.user.name }}</td>
   <td>{{ order.user.email }}</td>
 
-  <td>{{ order.payment_mode }}</td>
-
   <td>
-    {% if order.payment_status == "Pending" %}
-      <span class="badge bg-danger">Pending</span>
-    {% else %}
-      <span class="badge bg-success">Paid</span>
-    {% endif %}
+    <span class="badge bg-info">
+      {{ order.payment_mode }}
+    </span>
+  </td>
+
+  <!-- 🔥 ADMIN PAYMENT STATUS DROPDOWN -->
+  <td>
+    <form method="POST"
+          action="/admin/order/update-status/{{ order.id }}">
+      <select name="payment_status"
+              class="form-select form-select-sm"
+              onchange="this.form.submit()">
+
+        <option value="Pending"
+          {% if order.payment_status == "Pending" %}selected{% endif %}>
+          Pending
+        </option>
+
+        <option value="Paid"
+          {% if order.payment_status == "Paid" %}selected{% endif %}>
+          Paid
+        </option>
+
+      </select>
+    </form>
   </td>
 
   <td><strong>₹{{ order.total_amount }}</strong></td>
 
   <td>
-    <ul class="small">
+    <ul class="small mb-0">
       {% for item in order.items %}
-      <li>{{ item.product_name }} × {{ item.quantity }}</li>
+        <li>{{ item.product_name }} × {{ item.quantity }}</li>
       {% endfor %}
     </ul>
   </td>
+
 </tr>
 {% endfor %}
 </tbody>
 </table>
+</div>
 
 {% endblock %}
