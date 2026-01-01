@@ -147,7 +147,7 @@
           {% if product.stock > 10 %}
             <span class="badge bg-success">{{ product.stock }}</span>
           {% elif product.stock > 0 %}
-            <span class="badge bg-warning text-dark">{{ product.stock }}</span>
+            <span class="badge bg-warning">{{ product.stock }}</span>
           {% else %}
             <span class="badge bg-danger">Out of stock</span>
           {% endif %}
