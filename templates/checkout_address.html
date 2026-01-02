@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+
+<form method="POST">
+
+  <h5>Delivery Address</h5>
+
+  <input name="full_name" class="form-control mb-2" placeholder="Full Name" required>
+  <input name="phone" class="form-control mb-2" placeholder="Phone" required>
+
+  <textarea name="address_line" class="form-control mb-2"
+            placeholder="House / Street" required></textarea>
+
+  <input name="city" class="form-control mb-2" placeholder="City" required>
+  <input name="state" class="form-control mb-2" placeholder="State" required>
+  <input name="pincode" class="form-control mb-3" placeholder="Pincode" required>
+
+  <button formaction="/place-order/cod" class="btn btn-dark w-100 mb-2">
+    Cash on Delivery
+  </button>
+
+  <button formaction="/place-order/upi" class="btn btn-success w-100">
+    Pay via UPI
+  </button>
+
+</form>
+
+{% endblock %}

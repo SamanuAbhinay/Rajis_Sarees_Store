@@ -1418,3 +1418,14 @@ form.card .btn-secondary:hover {
   }
 }
 
+
+.admin-address {
+  max-width: 260px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #444;
+}
+
+.admin-address strong {
+  color: #000;
+}

@@ -47,7 +47,12 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(200), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
-    orders = db.relationship("Order", back_populates="user")
+    # ✅ EXPLICIT relationship (NO backref)
+    orders = db.relationship(
+        "Order",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
 
 
 class Product(db.Model):
@@ -86,17 +91,35 @@ class Wishlist(db.Model):
 
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    order_code = db.Column(db.String(20), unique=True, nullable=False)
+    order_code = db.Column(db.String(30), unique=True, nullable=False)
+
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+
+    # ✅ MATCHING RELATIONSHIP
+    user = db.relationship(
+        "User",
+        back_populates="orders"
+    )
 
     payment_mode = db.Column(db.String(20))
     payment_status = db.Column(db.String(20))
     total_amount = db.Column(db.Integer)
+
+    full_name = db.Column(db.String(100))
+    phone = db.Column(db.String(20))
+    address_line = db.Column(db.Text)
+    city = db.Column(db.String(50))
+    state = db.Column(db.String(50))
+    pincode = db.Column(db.String(10))
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    user = db.relationship("User", back_populates="orders")
-    items = db.relationship("OrderItem", backref="order", lazy=True)
-
+    items = db.relationship(
+        "OrderItem",
+        backref="order",
+        cascade="all, delete-orphan",
+        lazy=True
+    )
 
 class OrderItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -108,20 +131,33 @@ class OrderItem(db.Model):
 # -------------------------------------------------
 
 def create_order(payment_mode, payment_status):
-    cart_items = CartItem.query.filter_by(user_id=current_user.id).all()
+    items = CartItem.query.filter_by(user_id=current_user.id).all()
+
+    total = 0
+    for item in items:
+        total += item.product.price * item.quantity
+        item.product.stock -= item.quantity
 
     order = Order(
-        order_code=f"ORD{int(time.time())}",
+        order_code="ORD" + datetime.now().strftime("%Y%m%d%H%M%S"),
         user_id=current_user.id,
         payment_mode=payment_mode,
         payment_status=payment_status,
-        total_amount=sum(i.product.price * i.quantity for i in cart_items)
+        total_amount=total,
+
+        # ✅ ADDRESS (SAFE)
+        full_name=request.form.get("full_name"),
+        phone=request.form.get("phone"),
+        address_line=request.form.get("address_line"),
+        city=request.form.get("city"),
+        state=request.form.get("state"),
+        pincode=request.form.get("pincode")
     )
 
     db.session.add(order)
-    db.session.commit()
+    db.session.flush()
 
-    for item in cart_items:
+    for item in items:
         db.session.add(OrderItem(
             order_id=order.id,
             product_name=item.product.name,
@@ -320,7 +356,7 @@ def add_to_cart(product_id):
 
     db.session.commit()
     flash("Added to cart")
-    return redirect(url_for("product_details", product_id=product.id))
+    return redirect(url_for("home", product_id=product.id))
 
 @app.route("/cart/update/<int:item_id>", methods=["POST"])
 @login_required
@@ -447,6 +483,23 @@ def checkout():
     flash("Order placed successfully")
     return redirect(url_for("orders"))
 
+# @app.route("/checkout")
+# @login_required
+# def checkout():
+#     return render_template("checkout.html")
+
+
+@app.route("/checkout/address", methods=["GET"])
+@login_required
+def checkout_address():
+    items = CartItem.query.filter_by(user_id=current_user.id).all()
+    if not items:
+        flash("Your cart is empty")
+        return redirect(url_for("cart"))
+
+    total = sum(item.product.price * item.quantity for item in items)
+    return render_template("checkout_address.html", total=total)
+
 
 @app.route("/orders")
 @login_required
@@ -454,21 +507,27 @@ def orders():
     orders = Order.query.filter_by(user_id=current_user.id).order_by(Order.created_at.desc()).all()
     return render_template("orders_user.html", orders=orders)
 
-
-
-@app.route("/place-order/cod", methods=["POST"])
+@app.route("/place-order", methods=["POST"])
 @login_required
-def place_order_cod():
-    create_order("COD", "Pending")
+def place_order():
+    payment_method = request.form.get("payment_method")
+
+    if payment_method not in ["COD", "UPI"]:
+        flash("Invalid payment method")
+        return redirect(url_for("cart"))
+
+    order = create_order(
+        payment_mode=payment_method,
+        payment_status="Pending"
+    )
+
+    if payment_method == "UPI":
+        flash("Order placed. Please complete UPI payment.")
+        return redirect(url_for("upi_payment", order_code=order.order_code))
+
+    # COD
     flash("Order placed with Cash on Delivery")
-    return redirect(url_for("home"))
-
-@app.route("/place-order/upi", methods=["POST"])
-@login_required
-def place_order_upi():
-    order = create_order("UPI", "Pending")
-    flash("Order placed via UPI. Please complete the payment.")
-    return redirect(url_for("upi_payment", order_code=order.order_code))
+    return redirect(url_for("orders"))
 
 @app.route("/upi-payment/<order_code>")
 @login_required

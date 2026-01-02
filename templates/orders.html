@@ -110,6 +110,7 @@
       <th>Items</th>
       <th>Total</th>
       <th>Action</th>
+      <th>Address</th>
     </tr>
   </thead>
 
@@ -144,6 +145,14 @@
         </a>
       {% endif %}
     </td>
+
+    <td class="small">
+  <strong>{{ order.full_name }}</strong><br>
+  {{ order.address_line }}<br>
+  {{ order.city }}, {{ order.state }} - {{ order.pincode }}<br>
+  📞 {{ order.phone }}
+</td>
+
   </tr>
   {% endfor %}
 </table>

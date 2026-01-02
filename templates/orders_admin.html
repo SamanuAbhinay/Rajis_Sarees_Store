@@ -14,6 +14,7 @@
   <th>Payment Status</th>
   <th>Amount</th>
   <th>Items</th>
+  <th>Address</th>
 </tr>
 </thead>
 
@@ -22,7 +23,6 @@
 <tr>
 
   <td><strong>{{ order.order_code }}</strong></td>
-
   <td>{{ order.user.name }}</td>
   <td>{{ order.user.email }}</td>
 
@@ -63,6 +63,15 @@
       {% endfor %}
     </ul>
   </td>
+
+  <td>
+  <div class="admin-address">
+    <strong>{{ order.full_name }}</strong><br>
+    {{ order.address_line }}<br>
+    {{ order.city }}, {{ order.state }} - {{ order.pincode }}<br>
+    📞 {{ order.phone }}
+  </div>
+</td>
 
 </tr>
 {% endfor %}
