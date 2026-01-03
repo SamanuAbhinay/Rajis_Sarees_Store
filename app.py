@@ -324,7 +324,7 @@ def add_products():
     return "Products added"
 
 # ---------- CART ----------
-@app.route("/add-to-cart/<int:product_id>", methods=["POST"])
+@app.route("/add_to_cart/<int:product_id>", methods=["POST"])
 @login_required
 def add_to_cart(product_id):
     product = Product.query.get_or_404(product_id)
@@ -355,7 +355,7 @@ def add_to_cart(product_id):
         ))
 
     db.session.commit()
-    flash("Added to cart")
+    flash('Item added to cart!', 'success')
     return redirect(url_for("home", product_id=product.id))
 
 @app.route("/cart/update/<int:item_id>", methods=["POST"])

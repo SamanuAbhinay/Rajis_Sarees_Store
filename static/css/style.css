@@ -1429,3 +1429,16 @@ form.card .btn-secondary:hover {
 .admin-address strong {
   color: #000;
 }
+
+.product-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.btn {
+  border-radius: 25px;
+}

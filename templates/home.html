@@ -13,48 +13,57 @@
       <div class="product-card h-100 border rounded shadow-sm">
 
         <!-- Product Image -->
-        <!-- <img
-          src="{{ url_for('static', filename='uploads/' ~ product.image) }}"
+        <img
+          src="{{ url_for('static',
+                filename='uploads/' ~ product.name|lower|replace(' ', '') ~ '.jpg') }}"
           class="img-fluid product-img w-100"
           alt="{{ product.name }}"
-          onerror="this.src='{{ url_for('static', filename='uploads/default.jpg') }}'"
-        > -->
-        <!-- <img
-        src="{{ url_for('static', filename='uploads/' ~ product.image) }}"
-        class="img-fluid product-img w-100"
-        alt="{{ product.name }}"
-        onerror="this.onerror=null;this.src='/static/uploads/cotton.jpg';"
-      > -->
-      <img
-        src="{{ url_for('static',
-              filename='uploads/' ~ product.name|lower|replace(' ', '') ~ '.jpg') }}"
-        class="img-fluid product-img w-100"
-        alt="{{ product.name }}"
-        loading="lazy"
-        onerror="this.onerror=null;this.src='/static/uploads/cottonhandloomsaree.jpg';"
-      >
+          loading="lazy"
+          onerror="this.onerror=null;this.src='/static/uploads/cottonhandloomsaree.jpg';"
+        >
 
         <div class="p-3 text-center">
+
+          <!-- Product Name -->
           <h6 class="mb-1">{{ product.name }}</h6>
 
+          <!-- Price -->
           <p class="mb-2">
             <del class="text-muted">₹{{ product.mrp }}</del>
             <span class="text-danger fw-bold ms-1">₹{{ product.price }}</span>
           </p>
 
-          <form method="POST" action="/wishlist/toggle/{{ product.id }}">
-            <button type="submit" class="btn btn-outline-danger btn-sm w-100">
-              ❤️ Wishlist
-            </button>
-          </form>
+          <!-- Wishlist + Add to Cart (Side by Side) -->
+          <div class="row g-2 mt-2">
 
+            <div class="col-6">
+              <form method="POST" action="/wishlist/toggle/{{ product.id }}">
+                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                  ❤️ 
+                </button>
+              </form>
+            </div>
+
+            <div class="col-6">
+              <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}">
+                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                  🛒
+                </button>
+              </form>
+            </div>
+
+
+          </div>
+
+          <!-- View Details -->
           <a
             href="{{ url_for('product_details', product_id=product.id) }}"
             class="btn btn-dark btn-sm w-100 mt-2">
             View Details
           </a>
-        </div>
 
+        </div>
+        
       </div>
     </div>
 
